@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prize Spin Wheel</title>
+<style>
+  body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+
+  .wheel-container {
+    position: relative;
+    width: 300px;
+    height: 300px;
+  }
+
+  .wheel {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 8px solid #333;
+    position: relative;
+    transition-timing-function: ease-out;
+    transform: rotate(0deg);
+  }
+
+  .wheel:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    background: black;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+  }
+
+  .segment {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 50%;
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    transform-origin: 100% 100%;
+    z-index: 1;
+  }
+
+  /* Segment colors */
+  .segment:nth-child(1) { background-color: #f39c12; transform: rotate(0deg); }
+  .segment:nth-child(2) { background-color: #e74c3c; transform: rotate(45deg); }
+  .segment:nth-child(3) { background-color: #9b59b6; transform: rotate(90deg); }
+  .segment:nth-child(4) { background-color: #3498db; transform: rotate(135deg); }
+  .segment:nth-child(5) { background-color: #2ecc71; transform: rotate(180deg); }
+  .segment:nth-child(6) { background-color: #f1c40f; transform: rotate(225deg); }
+  .segment:nth-child(7) { background-color: #e67e22; transform: rotate(270deg); }
+  .segment:nth-child(8) { background-color: #e74c3c; transform: rotate(315deg); }
+
+  /* Labels for each segment */
+  .label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50%;
+    height: 50%;
+    transform-origin: 0% 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 2;
+  }
+
+  /* Rotate and position each label to align with the segment */
+  .label:nth-child(1) { transform: rotate(22.5deg) translate(80%, -50%); }
+  .label:nth-child(2) { transform: rotate(67.5deg) translate(80%, -50%); }
+  .label:nth-child(3) { transform: rotate(112.5deg) translate(80%, -50%); }
+  .label:nth-child(4) { transform: rotate(157.5deg) translate(80%, -50%); }
+  .label:nth-child(5) { transform: rotate(202.5deg) translate(80%, -50%); }
+  .label:nth-child(6) { transform: rotate(247.5deg) translate(80%, -50%); }
+  .label:nth-child(7) { transform: rotate(292.5deg) translate(80%, -50%); }
+  .label:nth-child(8) { transform: rotate(337.5deg) translate(80%, -50%); }
+
+  .pointer {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    width: 8px;
+    height: 40px;
+    background: black;
+    transform: translateX(-50%);
+    z-index: 10;
+  }
+
+  .spin-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .result {
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+  <div class="wheel-container">
+    <div class="wheel" id="wheel">
+      <div class="segment"></div>
+      <div class="segment"></div>
+      <div class="segment"></div>
+      <div class="segment"></div>
+      <div class="segment"></div>
+      <div class="segment"></div>
+      <div class="segment"></div>
+      <div class="segment"></div>
+      <!-- Labels for each segment -->
+      <div class="label">Prize 1</div>
+      <div class="label">Prize 2</div>
+      <div class="label">Prize 3</div>
+      <div class="label">Prize 4</div>
+      <div class="label">Prize 5</div>
+      <div class="label">Prize 6</div>
+      <div class="label">Prize 7</div>
+      <div class="label">Prize 8</div>
+    </div>
+    <div class="pointer"></div>
+  </div>
+  <button class="spin-btn" onclick="spinWheel()">Spin the Wheel!</button>
+  <div class="result" id="result"></div>
+
+  <script>
+    const prizes = [
+      "Prize 1",
+      "Prize 2",
+      "Prize 3",
+      "Prize 4",
+      "Prize 5",
+      "Prize 6",
+      "Prize 7",
+      "Prize 8"
+    ];
+
+    function spinWheel() {
+      const wheel = document.getElementById('wheel');
+      const result = document.getElementById('result');
+
+      // Clear previous result
+      result.innerHTML = "";
+
+      // Generate random spin time and rotation angle
+      const spinTime = Math.floor(Math.random() * 2000) + 4000; // Between 4 and 6 seconds
+      const degree = Math.floor(3600 + Math.random() * 360); // Multiple spins plus final random angle
+
+      // Apply rotation to wheel with smooth transition
+      wheel.style.transition = `transform ${spinTime}ms ease-out`;
+      wheel.style.transform = `rotate(${degree}deg)`;
+
+      // Calculate winning prize based on final rotation
+      setTimeout(() => {
+        const finalDegree = degree % 360;
+        const segmentAngle = 360 / prizes.length;
+        const index = Math.floor(finalDegree / segmentAngle);
+        const winningPrize = prizes[(prizes.length - index) % prizes.length];
+        
+        result.innerHTML = `You've won ${winningPrize}!`;
+      }, spinTime); // Match delay to spin animation duration
+    }
+  </script>
+</body>
+</html>
